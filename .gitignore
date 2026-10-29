@@ -1,0 +1,6 @@
+.venv/
+dataset 2/
+eda/processed/
+.DS_Store
+~$*
+__pycache__/
