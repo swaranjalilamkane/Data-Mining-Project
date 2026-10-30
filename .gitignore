@@ -4,3 +4,4 @@ eda/processed/
 .DS_Store
 ~$*
 __pycache__/
+*.docx
