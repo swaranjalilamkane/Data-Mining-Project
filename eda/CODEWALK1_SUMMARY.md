@@ -1,41 +1,56 @@
-# Codewalk 1: StudentLife data checkpoint
-Swaranjali Lamkane · CS 6220 Data Mining · 10/30
+# Checkpoint 4: Dataset Exploration
 
-**What I've done.** I explored the StudentLife dataset (Dartmouth, spring 2013). The raw data covers
-**49 students over 65 days**, in about 1,500 per-student files. There are 10 sensing streams (sensor
-inference labels, not raw signals: about 99 M audio rows and 23 M activity rows), app snapshots
-(2 M rows), SMS and call logs, 26 EMA question types (JSON), 8 pre/post surveys, and GPA for 30
-students. I merged everything into three tables: one row per **student-hour** (77,616 × 23), one
-per **student-day** with the EMA answers (3,234 rows), and one per **student** with survey scores
-and GPA (49 rows). The streams have very different sampling (1 s labels, 20-minute snapshots,
-start–end intervals, events), so I couldn't join on raw timestamps. I summarised each stream per
-hour and left-joined them onto a complete hourly grid, so hours with no data stay visible as missing.
+**Course:** Data Mining Techniques
+**Name:** Swaranjali Kulbhushan Lamkane
+**Dataset to Analyze:** StudentLife Dataset - Dartmouth College
+**Source code Link:** https://github.com/swaranjalilamkane/Data-Mining-Project
 
-**Preprocessing decisions.**
-- Converted timestamps from UTC to Dartmouth local time, otherwise "late night" is 4 hours off.
-  Clipped the data to the term.
-- Fixed formatting quirks: BOM characters, spaces in headers, trailing commas, a blank line after
-  every row, unsorted app files, and about 5% duplicate audio timestamps.
-- The app data is a snapshot every 20 minutes, not a usage log. My usage measure counts how often
-  the front app changes, excluding the study's own survey app (on top in 40% of snapshots).
-- Missing is not zero: hours with no sensing stay missing, and the 26 SMS and 29 call logs that have
-  no content are marked unobserved. A first version summed those to 0 by mistake; the missingness
-  plot caught it.
-- Recoded EMA answers per response (the stress codes are out of order; sleep answers are codes,
-  not hours) and reverse-scored the positively worded PSS and loneliness items.
+I explored the StudentLife dataset. It was collected at Dartmouth College in spring 2013. It has data
+from 49 students over the 10-week term, spread across about 1,500 files, with separate files for each
+student. The data includes:
 
-**Scale vs. compute.** The pipeline processes one student at a time and keeps only per-hour summaries,
-so it runs in **about 20 s with 1.4 GB peak memory** on my laptop. No sampling was needed, and later
-methods (PCA, k-means, association rules) will run on the small tables.
+- **Phone sensors:** these don't save real sound or movement. They only save the phone's guess. For
+  example, the phone listened every second and wrote down "silence", "voice", or "noise", but it never
+  recorded the actual sound. That gives about 99 million audio rows and 23 million activity rows
+  (still, walking, or running).
+- **App data:** which app was on the screen, saved every 20 minutes (about 2 million rows).
+- **SMS and call logs.**
+- **EMA:** short surveys that popped up on the phone during the day, like "How stressed are you right
+  now?" There are 26 types.
+- **8 questionnaires** taken at the start and end of the term (depression, stress, loneliness, and
+  others).
+- **GPA** for 30 of the students.
 
-**What surprised me.** (1) Phone-lock periods were only recorded when they lasted **1 to 10 hours**,
-and app data only has 20-minute resolution. So session length can't be measured, and my questions on
-session length (Q1) and within-session context (Q6) must be reframed around interaction frequency.
-(2) My copy is 2.8 GB, not the 52.6 GB in my proposal. Facebook is in under 1% of snapshots, 12
-students have less than 70% sensing coverage, and EMA answers drop from about 200 a week to 8 by
-week 10. (3) Nighttime lock minutes don't track self-reported sleep (Spearman ρ ≈ 0.00).
+I combined all of this into three tables:
 
-**Where things stand.** The cleaned tables and 8 figures are done. Students differ widely: median
-daily app switches range from 0 to 26, and the share of nights with phone use between 00:00 and 06:00
-ranges from 0% to 93%. Next: add location (`wifi_location`), build per-student features, then
-PCA → k-means → association rules.
+1. **Hourly table:** one row for each student for each hour (77,616 rows).
+2. **Daily table:** one row for each student for each day, together with their sleep and stress
+   answers (3,234 rows).
+3. **Student table:** one row for each student, with their questionnaire scores and GPA (49 rows).
+
+## Preprocessing decisions
+
+- The times in the data were in UTC, which is 4 hours ahead of Dartmouth time. I changed them to
+  Dartmouth local time. Otherwise, a student using their phone at 10 pm would look like they were
+  using it at 2 am.
+- Some files had small problems: hidden characters at the start, extra spaces in column names, an
+  extra comma at the end of each line, and empty lines between rows. The app files were also not in
+  time order, and some audio readings were repeated (about 5%). I cleaned all of this, sorted the app
+  data by time, and removed the repeats.
+- The app data doesn't tell us when a student opened or closed the phone. It only saves which app was
+  on the screen every 20 minutes. So I count how many times the app on the screen changed, and I use
+  that as a sign the student was using the phone.
+- If the phone recorded nothing for an hour, I keep that hour as "missing" and not as zero, because we
+  don't know what happened. Also, 26 students' SMS files and 29 students' call files had no messages
+  or calls saved at all, so I marked them as missing, not "0 texts".
+- The stress answers were numbered confusingly: 4 and 5 meant "feeling good", not "more stressed". I
+  renumbered them so 1 is great, and 5 is very stressed.
+
+## References
+
+1. StudentLife dataset: Wang, R., et al. (2014). StudentLife: Assessing mental health, academic
+   performance and behavioral trends of college students using smartphones.
+   https://doi.org/10.1145/2632048.2632054
+2. García, S., Ramírez-Gallego, S., Luengo, J., Benítez, J. M., & Herrera, F. (2016). Big data
+   preprocessing: Methods and prospects. Big Data Analytics, 1, Article 9.
+   https://doi.org/10.1186/s41044-016-0014-0
