@@ -11,6 +11,7 @@ Outputs (in eda/processed/):
   hourly.parquet   one row per uid x local hour, all sensing + app features
   daily.parquet    hourly rolled up to uid x local day, plus EMA sleep/stress
   users.parquet    one row per student: survey scores (pre/post) + GPA
+Each table is also written as .csv next to it, for opening in a spreadsheet or editor.
 """
 import glob
 import json
@@ -240,7 +241,12 @@ def main():
     daily = daily.reset_index()
     daily["day"] = daily["day"].dt.tz_localize(None)
     daily.to_parquet(f"{OUT}/daily.parquet")
-    load_users().to_parquet(f"{OUT}/users.parquet")
+    users = load_users()
+    users.to_parquet(f"{OUT}/users.parquet")
+    # CSV copies are for reading only; the analysis code loads the parquet files.
+    hourly.to_csv(f"{OUT}/hourly.csv", index=False)
+    daily.to_csv(f"{OUT}/daily.csv", index=False)
+    users.to_csv(f"{OUT}/users.csv")
     print(hourly.shape, daily.shape)
 
 
