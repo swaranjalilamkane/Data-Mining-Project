@@ -13,6 +13,12 @@ eda/
   probe*.py            first-pass structure checks of the raw files
   CODEWALK1_SUMMARY.md checkpoint write-up
   explore_output.txt   saved output of explore.py
+analysis/
+  student_profiles.py  per-student features -> KDE -> k-means
+  output.txt           saved output of student_profiles.py
+  figures/             KDE, choosing k, cluster and profile plots
+  CHECKPOINT5_SUMMARY.md  checkpoint 5 write-up
+  README.md            full step-by-step guide with questions and answers
 ```
 
 ## Setup
@@ -38,4 +44,5 @@ python3 -m venv .venv
 ```bash
 .venv/bin/python eda/build_features.py   # ~20 s, ~1.4 GB RAM
 .venv/bin/python eda/explore.py
+.venv/bin/python analysis/student_profiles.py   # a few seconds
 ```

@@ -1,0 +1,47 @@
+== feature table (49, 7) | good days per student: min 17, median 54
+                  count    mean    std    min    25%     50%     75%     max
+switches_per_day   49.0   5.745  6.149  0.000  1.000   3.000  11.000  27.000
+nights_with_use    49.0   0.382  0.280  0.000  0.125   0.323   0.600   0.966
+night_frac         49.0   0.157  0.077  0.000  0.094   0.151   0.229   0.277
+morning_frac       49.0   0.175  0.081  0.000  0.109   0.176   0.233   0.362
+evening_frac       49.0   0.363  0.102  0.241  0.313   0.342   0.378   0.774
+social_frac        49.0   0.033  0.065  0.000  0.000   0.006   0.031   0.347
+long_lock_h        49.0  10.685  4.268  0.000  8.067  10.858  13.517  20.150
+
+== Spearman correlation between features
+                   switches_per_day  nights_with_use  night_frac  morning_frac  evening_frac  social_frac  long_lock_h
+switches_per_day              1.00             0.87        0.18          0.18         -0.31         0.78        -0.03
+nights_with_use               0.87             1.00        0.54         -0.05         -0.23         0.75        -0.15
+night_frac                    0.18             0.54        1.00         -0.52          0.10         0.21        -0.22
+morning_frac                  0.18            -0.05       -0.52          1.00         -0.51         0.17         0.28
+evening_frac                 -0.31            -0.23        0.10         -0.51          1.00        -0.31        -0.16
+social_frac                   0.78             0.75        0.21          0.17         -0.31         1.00        -0.12
+long_lock_h                  -0.03            -0.15       -0.22          0.28         -0.16        -0.12         1.00
+
+== KDE bandwidths (share of zero days 0.22)
+   daily switches   Silverman  0.209  peaks at [ 0.  12.1]
+   daily switches   Scott      0.246  peaks at [ 0.  11.8]
+   nights with use  Silverman  0.114  peaks at [0.16]
+   nights with use  Scott      0.135  peaks at [0.17]
+
+== k-means: silhouette by k {2: 0.255, 3: 0.267, 4: 0.254, 5: 0.244, 6: 0.255} -> k = 3
+   inertia by k {2: 244.7, 3: 188.8, 4: 155.4, 5: 133.9, 6: 112.3}
+   cluster sizes [11, 21, 17]
+   good days per cluster (median): {1: 37.0, 2: 56.0, 3: 55.0} | students with < 40 good days per cluster: {1: 7, 2: 1, 3: 3}
+
+== cluster profiles (median per cluster)
+ cluster                1       2       3
+switches_per_day   1.000   2.000  12.000
+nights_with_use    0.158   0.209   0.714
+night_frac         0.161   0.090   0.200
+morning_frac       0.093   0.233   0.156
+evening_frac       0.394   0.326   0.328
+social_frac        0.000   0.004   0.043
+long_lock_h        5.983  13.133  10.583
+convo_h            4.883   5.267   5.267
+moving             0.026   0.040   0.040
+voice              0.158   0.165   0.163
+good_days         37.000  56.000  55.000
+switches_cv        1.287   1.039   0.556
+
+== timing (s): {'features': 0.036, 'kde': 0.0, 'kmeans_k_search': 0.085}
